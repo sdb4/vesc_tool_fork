@@ -29,7 +29,7 @@ Categories=Utility;Science;
 EOF
 
 # Copy the executable and icon
-cp vesc_tool_6.06 "$binDir"
+cp build/lin/vesc_tool_6.06 "$binDir"
 cp vesc_tool_icon.png "$iconDir"
 
 # Download linuxdeploy
@@ -44,10 +44,16 @@ wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/cont
 # make them executable
 chmod +x linuxdeploy-*.AppImage
 
+# Patch
+# https://github.com/AppImage/AppImageKit/issues/1027
+dd if=/dev/zero of=linuxdeploy-aarch64.AppImage conv=notrunc bs=1 count=3 seek=8;
+
 # Build the AppImage
-./linuxdeploy-aarch64.AppImage --appdir appdir --plugin qt --output appimage
+./linuxdeploy-aarch64.AppImage --appimage-extract-and-run --appdir appdir --plugin qt --output appimage
 #mv VESC_Tool-aarch64.AppImage vesc_tool_6.06
 
 # Clean-up (uncomment these lines if clean-up is desired)
 rm -rf appdir/
 rm linuxdeploy-*.AppImage
+
+#rsync -auzv VESC_Tool-aarch64.AppImage admin@192.168.153.1:
